@@ -167,11 +167,11 @@ class BioSimSimulation:
         plt.figure()
         plt.plot(range(len(temps)), temps)
         plt.title('Thermal Loop Failure: Water Sink Temperature Rise')
-        plt.xlabel('Hours Since Pump Failure')
-        plt.ylabel('Temperature (C)')
+        plt.xlabel('Time (Hours)')
+        plt.ylabel('Temperature (°C)')
         plt.axhline(y=critical_temp, color='r', linestyle='--', label='Critical Temp (40C)')
         plt.legend()
-        plt.savefig('thermal_loop_failure.png')
+        plt.savefig('thermodynamics_curve.jpg')
         plt.close()
 
         return hours
