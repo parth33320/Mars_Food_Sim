@@ -1,5 +1,6 @@
 import requests
 import json
+import math
 import matplotlib.pyplot as plt
 
 base_url = 'http://localhost:8009/api/simulation'
@@ -132,13 +133,13 @@ class BioSimSimulation:
 
         return days_survived
 
-    def thermal_loop_failure(self):
+    def thermal_loop_failure(self, water_mass_kg=20000, return_temps=False):
         # Time to critical temperature (40C) from 20C
         critical_temp = 40.0
         current_temp = 20.0
+        ambient_temp = 20.0
+        cooling_coefficient = 0.015
 
-        # 20,000 L = 20,000 kg
-        water_mass_kg = 20000
         water_heat_capacity = 4184 # J / (kg * C)
         waste_heat_J_per_hour = 29000 * 3600
 
@@ -146,8 +147,17 @@ class BioSimSimulation:
         temps = [current_temp]
 
         while current_temp < critical_temp:
-            temp_increase = waste_heat_J_per_hour / (water_mass_kg * water_heat_capacity)
-            current_temp += temp_increase
+            if hours >= 500:
+                break
+
+            # Newton's Law of Cooling
+            heat_out = cooling_coefficient * (current_temp - ambient_temp)
+            heat_in = waste_heat_J_per_hour / (water_mass_kg * water_heat_capacity)
+
+            if heat_in <= heat_out:
+                break
+
+            current_temp += (heat_in - heat_out)
             temps.append(current_temp)
             hours += 1
 
@@ -161,6 +171,8 @@ class BioSimSimulation:
         plt.savefig('thermal_loop_failure.png')
         plt.close()
 
+        if return_temps:
+            return hours, temps
         return hours
 
 if __name__ == "__main__":

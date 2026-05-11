@@ -9,7 +9,24 @@ class TestBioSimSimulation(unittest.TestCase):
         self.assertAlmostEqual(days_survived, 154.50, places=1)
 
         hours_to_critical = s.thermal_loop_failure()
-        self.assertEqual(hours_to_critical, 17)
+        self.assertEqual(hours_to_critical, 19)
+
+    def test_thermal_non_linearity(self):
+        s = sim.BioSimSimulation()
+        hours_to_critical, temps = s.thermal_loop_failure(return_temps=True)
+
+        # Calculate rates of change (slopes)
+        slopes = [temps[i] - temps[i-1] for i in range(1, len(temps))]
+
+        # Assert that the slope strictly decreases over time (cooling is proportional to temp diff)
+        for i in range(1, len(slopes)):
+            self.assertLess(slopes[i], slopes[i-1], "Cooling rate (slope) should strictly decrease over time")
+
+    def test_thermal_extreme_conditions(self):
+        s = sim.BioSimSimulation()
+        with self.assertRaises(ZeroDivisionError):
+            # Zero water mass should raise ZeroDivisionError
+            s.thermal_loop_failure(water_mass_kg=0)
 
 if __name__ == '__main__':
     unittest.main()
