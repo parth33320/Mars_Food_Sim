@@ -1,3 +1,4 @@
+import math
 import requests
 import json
 import matplotlib.pyplot as plt
@@ -136,6 +137,8 @@ class BioSimSimulation:
         # Time to critical temperature (40C) from 20C
         critical_temp = 40.0
         current_temp = 20.0
+        ambient_temp = 20.0 # Heat escapes to the ambient habitat air
+        cooling_coefficient = 0.015 # Heat transfer coefficient
 
         # 20,000 L = 20,000 kg
         water_mass_kg = 20000
@@ -145,11 +148,21 @@ class BioSimSimulation:
         hours = 0
         temps = [current_temp]
 
-        while current_temp < critical_temp:
-            temp_increase = waste_heat_J_per_hour / (water_mass_kg * water_heat_capacity)
-            current_temp += temp_increase
+        # Add a timeout constraint of 500 hours to prevent infinite loops if equilibrium is reached
+        while current_temp < critical_temp and hours < 500:
+            # Heat added by the failed pump system
+            heat_in = waste_heat_J_per_hour / (water_mass_kg * water_heat_capacity)
+
+            # Heat lost to the environment via Newton's Law of Cooling
+            heat_out = cooling_coefficient * (current_temp - ambient_temp)
+
+            current_temp += (heat_in - heat_out)
             temps.append(current_temp)
             hours += 1
+
+            # Break if thermal equilibrium is reached below the critical threshold
+            if heat_in <= heat_out:
+                break
 
         plt.figure()
         plt.plot(range(len(temps)), temps)

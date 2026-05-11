@@ -9,7 +9,7 @@ class TestBioSimSimulation(unittest.TestCase):
         self.assertAlmostEqual(days_survived, 154.50, places=1)
 
         hours_to_critical = s.thermal_loop_failure()
-        self.assertEqual(hours_to_critical, 17)
+        self.assertEqual(hours_to_critical, 19)
 
 if __name__ == '__main__':
     unittest.main()
