@@ -5,8 +5,8 @@ import os
 class TestBioSimSimulation(unittest.TestCase):
     def test_simulation(self):
         s = sim.BioSimSimulation()
-        days_survived = s.catastrophic_power_failure()
-        self.assertAlmostEqual(days_survived, 154.50, places=1)
+        hours_survived = s.catastrophic_power_failure()
+        self.assertEqual(hours_survived, 13755)
 
         hours_to_critical = s.thermal_loop_failure()
         self.assertEqual(hours_to_critical, 19)
@@ -58,6 +58,15 @@ class TestBioSimSimulation(unittest.TestCase):
         with self.assertRaises(ValueError):
             # Zero carrying capacity
             s.metabolic_banking(carrying_capacity=0)
+
+    def test_circadian_metabolism_drain(self):
+        # Assert First: assert hours_survived is non-zero positive integer and food_buffer is <= 0
+        s = sim.BioSimSimulation()
+        hours_survived, final_food_buffer = s.catastrophic_power_failure(return_details=True)
+
+        self.assertIsInstance(hours_survived, int)
+        self.assertGreater(hours_survived, 0)
+        self.assertLessEqual(final_food_buffer, 0)
 
 if __name__ == '__main__':
     unittest.main()
