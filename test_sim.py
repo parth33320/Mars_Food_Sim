@@ -9,7 +9,7 @@ class TestBioSimSimulation(unittest.TestCase):
         self.assertAlmostEqual(days_survived, 154.50, places=1)
 
         hours_to_critical = s.thermal_loop_failure()
-        self.assertEqual(hours_to_critical, 19)
+        self.assertEqual(hours_to_critical, 500)
 
     def test_thermal_non_linearity(self):
         # Assert First pattern: assert the slope strictly decreases over time

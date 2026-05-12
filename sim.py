@@ -154,6 +154,14 @@ class BioSimSimulation:
             temps.append(current_temp)
             hours += 1
 
+        plt.figure()
+        plt.plot(range(len(temps)), temps)
+        plt.title('Thermal Loop Failure: Water Sink Temperature Rise')
+        plt.xlabel('Time (Hours)')
+        plt.ylabel('Temperature (°C)')
+        plt.savefig('thermodynamics_curve.jpg')
+        plt.close()
+
         if return_temps:
             return hours, temps
         return hours
