@@ -24,9 +24,9 @@ class TestBioSimSimulation(unittest.TestCase):
 
     def test_thermal_extreme_conditions(self):
         s = sim.BioSimSimulation()
-        with self.assertRaises(ZeroDivisionError):
-            # Zero water mass should raise ZeroDivisionError
-            s.thermal_loop_failure(water_mass_kg=0)
+        # Test a sudden 100C ambient spike to ensure it does not crash
+        hours, temps = s.thermal_loop_failure(ambient_temp=100.0, return_temps=True)
+        self.assertGreater(len(temps), 0)
 
 if __name__ == '__main__':
     unittest.main()

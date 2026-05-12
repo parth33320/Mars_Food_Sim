@@ -133,11 +133,10 @@ class BioSimSimulation:
 
         return days_survived
 
-    def thermal_loop_failure(self, water_mass_kg=20000, return_temps=False):
+    def thermal_loop_failure(self, water_mass_kg=20000, ambient_temp=20.0, return_temps=False):
         # Time to critical temperature (40C) from 20C
         critical_temp = 40.0
         current_temp = 20.0
-        ambient_temp = 20.0
         cooling_coefficient = 0.015
 
         water_heat_capacity = 4184 # J / (kg * C)
@@ -164,11 +163,11 @@ class BioSimSimulation:
         plt.figure()
         plt.plot(range(len(temps)), temps)
         plt.title('Thermal Loop Failure: Water Sink Temperature Rise')
-        plt.xlabel('Hours Since Pump Failure')
-        plt.ylabel('Temperature (C)')
+        plt.xlabel('Time (Hours)')
+        plt.ylabel('Temperature (°C)')
         plt.axhline(y=critical_temp, color='r', linestyle='--', label='Critical Temp (40C)')
         plt.legend()
-        plt.savefig('thermal_loop_failure.png')
+        plt.savefig('thermodynamics_curve.jpg')
         plt.close()
 
         if return_temps:
