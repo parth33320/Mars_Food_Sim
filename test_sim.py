@@ -125,5 +125,35 @@ class TestBioSimSimulation(unittest.TestCase):
         self.assertIsNotNone(o2_store, "O2_Store is missing")
         self.assertIsNotNone(o2_store.get('capacity'), "O2_Store must have a capacity defined")
 
+    @patch('sim.requests.get')
+    def test_open_mct_connectivity(self, mock_get):
+        # Assert First pattern: We test for a 200 HTTP response.
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_get.return_value = mock_response
+
+        # Check Open MCT connectivity
+        is_connected = sim.verify_open_mct_connectivity()
+
+        # Assert the correct URL was hit and the connection is True
+        mock_get.assert_called_once_with('http://localhost:9091')
+        self.assertTrue(is_connected, "Should return True on HTTP 200 from Open MCT")
+
+    @patch('sim.websocket.create_connection')
+    def test_websocket_telemetry(self, mock_ws_connect):
+        # Assert First pattern: test JSON parsing from ws
+        mock_ws = Mock()
+        mock_ws.recv.return_value = '{"o2Moles": 500.5, "co2Moles": 150.2, "relativeHumidity": 45.0, "otherData": "ignore"}'
+        mock_ws_connect.return_value = mock_ws
+
+        # Execute
+        data = sim.websocket_listener(sim_id=1)
+
+        # Assertions
+        mock_ws_connect.assert_called_once_with('ws://localhost:8009/ws/simulation/1')
+        self.assertEqual(data.get('o2Moles'), 500.5)
+        self.assertEqual(data.get('co2Moles'), 150.2)
+        self.assertEqual(data.get('relativeHumidity'), 45.0)
+
 if __name__ == '__main__':
     unittest.main()

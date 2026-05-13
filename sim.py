@@ -2,6 +2,7 @@ import requests
 import json
 import math
 import matplotlib.pyplot as plt
+import websocket
 
 biosim_config_xml = """<biosim>
     <CrewGroup>
@@ -53,6 +54,28 @@ def get_module_property(sim_id, module_name, prop_name):
     if res.status_code == 200:
         return res.json()['properties'].get(prop_name)
     return None
+
+def verify_open_mct_connectivity():
+    try:
+        response = requests.get('http://localhost:9091')
+        return response.status_code == 200
+    except requests.exceptions.RequestException:
+        return False
+
+def websocket_listener(sim_id):
+    ws_url = f"ws://localhost:8009/ws/simulation/{sim_id}"
+    ws = websocket.create_connection(ws_url)
+    try:
+        data = ws.recv()
+        parsed_data = json.loads(data)
+
+        return {
+            'o2Moles': parsed_data.get('o2Moles'),
+            'co2Moles': parsed_data.get('co2Moles'),
+            'relativeHumidity': parsed_data.get('relativeHumidity')
+        }
+    finally:
+        ws.close()
 
 class BioSimSimulation:
     def __init__(self):

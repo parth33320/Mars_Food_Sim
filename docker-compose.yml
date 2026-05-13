@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  biosim-backend:
+    image: biosim-server
+    environment:
+      - BIOSIM_WRITE_TICKS=true
+    ports:
+      - "8009:8009"
+      - "9091:9091"
