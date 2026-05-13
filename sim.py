@@ -3,6 +3,36 @@ import json
 import math
 import matplotlib.pyplot as plt
 
+biosim_config_xml = """<biosim>
+    <CrewGroup>
+        <crew_member name="crew1"><activity_schedule/></crew_member>
+        <crew_member name="crew2"><activity_schedule/></crew_member>
+        <crew_member name="crew3"><activity_schedule/></crew_member>
+        <crew_member name="crew4"><activity_schedule/></crew_member>
+        <crew_member name="crew5"><activity_schedule/></crew_member>
+        <crew_member name="crew6"><activity_schedule/></crew_member>
+        <crew_member name="crew7"><activity_schedule/></crew_member>
+        <crew_member name="crew8"><activity_schedule/></crew_member>
+        <crew_member name="crew9"><activity_schedule/></crew_member>
+        <crew_member name="crew10"><activity_schedule/></crew_member>
+        <crew_member name="crew11"><activity_schedule/></crew_member>
+        <crew_member name="crew12"><activity_schedule/></crew_member>
+        <crew_member name="crew13"><activity_schedule/></crew_member>
+        <crew_member name="crew14"><activity_schedule/></crew_member>
+        <crew_member name="crew15"><activity_schedule/></crew_member>
+    </CrewGroup>
+    <Biomass>
+        <shelf/><shelf/><shelf/><shelf/><shelf/><shelf/><shelf/>
+        <shelf/><shelf/><shelf/><shelf/><shelf/><shelf/><shelf/>
+        <shelf/><shelf/><shelf/><shelf/><shelf/><shelf/><shelf/>
+        <shelf/><shelf/><shelf/><shelf/><shelf/><shelf/><shelf/>
+    </Biomass>
+    <Stores>
+        <Potable_Water_Store capacity="20000" />
+        <O2_Store capacity="15000" />
+    </Stores>
+</biosim>"""
+
 base_url = 'http://localhost:8009/api/simulation'
 
 def start_simulation(payload_file):

@@ -68,5 +68,40 @@ class TestBioSimSimulation(unittest.TestCase):
         self.assertGreater(hours_survived, 0)
         self.assertLessEqual(final_food_buffer, 0)
 
+    def test_biosim_xml_config(self):
+        import xml.etree.ElementTree as ET
+
+        # Parse the XML config
+        try:
+            root = ET.fromstring(sim.biosim_config_xml)
+        except AttributeError:
+            self.fail("sim.biosim_config_xml is not defined.")
+        except ET.ParseError:
+            self.fail("sim.biosim_config_xml is not valid XML.")
+
+        # Assert root is biosim
+        self.assertEqual(root.tag, 'biosim')
+
+        # Assert 15 crew members, each with an activity schedule
+        crew_members = root.findall('.//crew_member')
+        self.assertEqual(len(crew_members), 15, "There should be exactly 15 crew members")
+        for crew in crew_members:
+            schedules = crew.findall('.//activity_schedule')
+            self.assertGreaterEqual(len(schedules), 1, "Each crew member must have an activity_schedule to avoid NPE")
+
+        # Assert 28 plant growth shelves
+        shelves = root.findall('.//shelf')
+        self.assertEqual(len(shelves), 28, "There should be exactly 28 plant growth shelves")
+
+        # Assert Potable_Water_Store with capacity 20000
+        water_store = root.find('.//Potable_Water_Store')
+        self.assertIsNotNone(water_store, "Potable_Water_Store is missing")
+        self.assertEqual(water_store.get('capacity'), '20000', "Potable_Water_Store must have capacity 20000")
+
+        # Assert O2_Store is present
+        o2_store = root.find('.//O2_Store')
+        self.assertIsNotNone(o2_store, "O2_Store is missing")
+        self.assertIsNotNone(o2_store.get('capacity'), "O2_Store must have a capacity defined")
+
 if __name__ == '__main__':
     unittest.main()
