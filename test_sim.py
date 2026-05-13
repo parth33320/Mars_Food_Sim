@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch, Mock
 import sim
 import os
 
@@ -67,6 +68,27 @@ class TestBioSimSimulation(unittest.TestCase):
         self.assertIsInstance(hours_survived, int)
         self.assertGreater(hours_survived, 0)
         self.assertLessEqual(final_food_buffer, 0)
+
+    @patch('sim.requests.post')
+    def test_start_simulation_posts_xml(self, mock_post):
+        # Setup mock response
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {'simId': 12345}
+        mock_post.return_value = mock_response
+
+        # Call the function
+        sim_id = sim.start_simulation(sim.biosim_config_xml)
+
+        # Assert post was called with correct arguments
+        mock_post.assert_called_once_with(
+            "http://localhost:8009/api/simulation/start",
+            data=sim.biosim_config_xml,
+            headers={'Content-Type': 'text/plain'}
+        )
+
+        # Assert returned simID is correct
+        self.assertEqual(sim_id, 12345)
 
     def test_biosim_xml_config(self):
         import xml.etree.ElementTree as ET
