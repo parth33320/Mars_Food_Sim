@@ -35,13 +35,10 @@ biosim_config_xml = """<biosim>
 
 base_url = 'http://localhost:8009/api/simulation'
 
-def start_simulation(payload_file):
-    with open(payload_file, 'r') as f:
-        xml_payload = f.read()
-
+def start_simulation(xml_payload):
     response = requests.post(f"{base_url}/start", data=xml_payload, headers={'Content-Type': 'text/plain'})
     if response.status_code != 200:
-        print(f"Failed to start {payload_file}. Status: {response.status_code}")
+        print(f"Failed to start simulation. Status: {response.status_code}")
         print(response.text)
         exit(1)
 
@@ -73,9 +70,8 @@ class BioSimSimulation:
         self.active_towers = 25
 
     def nominal_steady_state(self):
-        # We start the BioSim simulation using the provided default config since custom configs with multiple crew cause NPE in this version
-        # It allows us to prove closed loop waste recycling logic using the framework
-        sim_id = start_simulation('biosim/configuration/default.biosim')
+        # We start the BioSim simulation using the custom biosim_config_xml payload
+        sim_id = start_simulation(biosim_config_xml)
 
         water_levels = []
 
